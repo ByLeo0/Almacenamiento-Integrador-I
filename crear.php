@@ -139,19 +139,29 @@
                 <p></p>
 
                 <label for="precio_costo">Precio Costo:</label>
-                <input type="number" id="precio_costo" name="precio_costo" value="<?php echo $precio_costo; ?>">
+                <input type="number" id="precio_costo" name="precio_costo" value="<?php echo $precio_costo; ?>" oninput="calcularMultiplicacion()">
 
                 <p></p>
 
                 <label for="ganancia">Ganancia:</label>
-                <input type="number" id="ganancia" name="ganancia" value="<?php echo $ganancia; ?>">
+                <input type="number" id="ganancia" name="ganancia" placeholder="Ejemplo:1.3,1.7,..." max="5" value="<?php echo $ganancia; ?>" oninput="calcularMultiplicacion()">
 
                 <p></p>
-
+                    
                 <label for="precioU_Venta">Precio Unitario Venta:</label>
-                <input type="number" id="precioU_Venta" name="precioU_Venta" value="<?php echo $precioU_Venta; ?>">
-
-                <p></p>
+                <input type="number" id="precioU_Venta" name="precioU_Venta" value="<?php echo $precioU_Venta; ?>" readonly>
+                
+                <script>
+                    function calcularMultiplicacion() {
+                        const p_costo = document.getElementById("precio_costo").value;
+                        const ganancia = document.getElementById("ganancia").value;
+                        if(p_costo && ganancia){
+                            const precio_venta = p_costo * ganancia;
+                            document.getElementById("precioU_Venta").value = precio_venta;
+                        }
+                        
+                    }
+                </script>
 
             </fieldset>
 
@@ -159,5 +169,4 @@
         </form> 
         
     </main>
-
 
