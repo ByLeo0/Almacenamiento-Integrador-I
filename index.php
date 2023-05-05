@@ -100,7 +100,7 @@
                             <input type="submit" class="boton rojo" value="Eliminar">
                         </form>
                     
-                        <a href="admin/propiedades/actualizar.php?id=<?php echo $producto['idproductos']; ?>" class="boton naranja">Actualizar</a>
+                        <a href="admin/propiedades/actualizar.php?idproductos=<?php echo $producto['idproductos']; ?>" class="boton naranja">Actualizar</a>
                     </td>
             <?php endwhile; ?>
                 </tr>
