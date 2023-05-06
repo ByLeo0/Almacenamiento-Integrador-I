@@ -15,6 +15,11 @@
     // Obtener los datos del proveedor
     $consulta = "SELECT * FROM proveedor WHERE idproveedor = $idproveedor";
     $resultado = mysqli_query($db, $consulta);
+    
+    if($resultado->num_rows===0){
+        header('Location: /Proveedores');
+    }    
+
     $proveedor = mysqli_fetch_assoc($resultado);
 
     //Arreglo con mensajes de errores
