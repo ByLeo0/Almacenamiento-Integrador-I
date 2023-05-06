@@ -1,54 +1,32 @@
 <?php
 
-    
-    $idproductos = $_GET['idproductos'];
-    $idproductos = filter_var($idproductos, FILTER_VALIDATE_INT);
-
-    if(!$idproductos) {
-        header('Location: /admin');
-    }
-
     //Base de datos
     require '../../includes/config/database.php';
     $db=conectarDB();
 
-    // Obtener los datos de la propiedad
-    $consulta = "SELECT * FROM productos WHERE idproductos = $idproductos";
-    $resultado = mysqli_query($db, $consulta);
-    $productos = mysqli_fetch_assoc($resultado);
-
-    // Consultar para obtener los vendedores
+    // Consultar para obtener los categorias
     $consulta = "SELECT * FROM categoria";
     $resultado = mysqli_query($db, $consulta);
 
     //Arreglo con mensajes de errores
     $errores=[];
 
-    //muestra los datos de la propiedad, ojo: tiene que ser la variable igual al del sql(lo que está dentro del corchete[])
-    $descripcion=$productos['descripcion'];
-    $categoriaId=$productos['categoria_id'];
-    $stock=$productos['stock'];
-    $imagenProducto=$productos['imagen_producto'];
-    $precio_costo=$productos['precio_costo'];
-    $ganancia=$productos['ganancia'];
-    $precioU_Venta=$productos['precio_unitarioVenta'];
+    $descripcion='';
+    $categoriaId='';
+    $stock='';
+    $precio_costo='';
+    $ganancia='';
+    $precioU_Venta='';
 
     if($_SERVER['REQUEST_METHOD']==='POST'){
-        /*
-        echo "<pre>";
-        var_dump($_POST);
-        echo "</pre>";
-        */
-        
-        //sanitizamos con msqli_real_scape_strin($db,......), lo de los puntos seria las variables normales sin satinizar
-        $descripcion = mysqli_real_escape_string( $db,  $_POST['descripcion'] );
-        $categoriaId = mysqli_real_escape_string( $db,  $_POST['categoria'] );
-        $stock = mysqli_real_escape_string( $db,  $_POST['stock'] );
-        $precio_costo = mysqli_real_escape_string( $db,  $_POST['precio_costo'] );
-        $ganancia = mysqli_real_escape_string( $db,  $_POST['ganancia'] );
-        $precioU_Venta = mysqli_real_escape_string( $db,  $_POST['precioU_Venta'] );
 
-        // Asignar files hacia una variable
+        $descripcion=mysqli_real_escape_string( $db, $_POST['descripcion']);
+        $categoriaId=mysqli_real_escape_string( $db, $_POST['categoria']);
+        $stock=mysqli_real_escape_string( $db, $_POST['stock']);
+        $precio_costo=mysqli_real_escape_string( $db, $_POST['precio_costo']);
+        $ganancia=mysqli_real_escape_string( $db, $_POST['ganancia']);
+        $precioU_Venta=mysqli_real_escape_string( $db, $_POST['precioU_Venta']);
+
         $imagen = $_FILES['imagen'];
 
         if(!$descripcion){
@@ -69,7 +47,9 @@
         if(!$precioU_Venta){
             $errores[]="Debes colocar el precio unitario de venta";
         }
-        
+        if(!$imagen['name'] || $imagen['error'] ) {//el error aparerece porque php solo acepta 2MB maximo
+            $errores[] = 'La Imagen es Obligatoria';
+        }
 
         // Validar por tamaño (1mb máximo)
         $medida = 1000 * 1000;
@@ -78,48 +58,32 @@
             $errores[] = 'La imagen es muy pesada';
         }
 
-        /*
-        echo "<pre>";
-        var_dump($errores);
-        echo "</pre>";
-        */
 
         if(empty($errores)){
 
             /** SUBIDA DE ARCHIVOS */
-            
+
             // Crear carpeta
-            $carpetaImagenes = '../../imagenes/';
+            $carpetaImagenes = '../../img/productos/';
 
             if(!is_dir($carpetaImagenes)) {
                 mkdir($carpetaImagenes);
             }
 
-            $nombreImagen = '';
+            // Generar un nombre único
+            $nombreImagen = md5( uniqid( rand(), true ) ) . ".jpg";
 
-            /** SUBIDA DE ARCHIVOS */
+            // Subir la imagen
+            move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen );//tmp_name es el atributo que le da el archivo cuando se sube la imagen
 
-            if($imagen['name']) {
-                // Eliminar la imagen previa, esto es para no llenar mi carpeta de imagenes
-
-                unlink($carpetaImagenes . $productos['imagen_producto']);
-
-                // // Generar un nombre único
-                $nombreImagen = md5( uniqid( rand(), true ) ) . ".jpg";
-
-                // // Subir la imagen
-                move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen );
-            } else {
-                $nombreImagen = $productos['imagen_producto'];
-            }
 
             
             //Insertar en la base de datos
-            $query = "UPDATE productos SET descripcion = '$descripcion', categoria_id = $categoriaId, stock=$stock, imagen_producto = '$nombreImagen', precio_costo = $precio_costo, ganancia = $ganancia, precio_unitarioVenta = $precioU_Venta WHERE idproductos = $idproductos";
-        
-            //echo $query;
-                    
+            $query = "INSERT INTO productos (descripcion, categoria_id, stock, imagen_producto, precio_costo, ganancia, precio_unitarioVenta)
+            VALUES ('$descripcion','$categoriaId', '$stock','$nombreImagen','$precio_costo','$ganancia','$precioU_Venta')";
 
+            //echo $query;
+        
             $resultado= mysqli_query($db, $query);
 
             if($resultado){
@@ -127,22 +91,17 @@
                 //echo "Insertado correctamente";
 
                 //Redireccionar al usuario, se usa poco y solo se puede usar si es que no hay html antes de esta funcion
-                header('Location: /admin?resultado=2');
+                header('Location: /Productos?resultado=1');
             }
         }
     }
 
-?>  
-    <style>
-        .imagen-small{
-            width: 10rem;
-        }
-    </style>
+?>
 
     <main>
-        <h1>Actualizar Producto</h1>
+        <h1>Agregar Producto</h1>
 
-        <a href="/admin" class="boton">Volver</a>
+        <a href="/Productos" class="boton">Volver</a>
 
         <?php foreach($errores as $error): ?>
         <div class="alerta error">
@@ -150,7 +109,7 @@
         </div>
         <?php endforeach; ?>
 
-        <form class="formulario" method="POST" enctype="multipart/form-data">
+        <form class="formulario" method="POST" action="/Productos/propiedades/crear.php" enctype="multipart/form-data">
             <fieldset>
                 <legend>Producto</legend>
 
@@ -177,8 +136,6 @@
                 <label for="imagen">Imagen:</label>
                 <input type="file" id="imagen" accept="image/jpeg, image/png" name="imagen">
 
-                <img src="/imagenes/<?php echo $imagenProducto; ?>" class="imagen-small">
-
                 <p></p>
 
                 <label for="precio_costo">Precio Costo:</label>
@@ -190,10 +147,10 @@
                 <input type="number" step="0.01" id="ganancia" name="ganancia" placeholder="Ejemplo:1.3,1.7,..." max="5" value="<?php echo $ganancia; ?>" oninput="calcularMultiplicacion()">
 
                 <p></p>
-
+                    
                 <label for="precioU_Venta">Precio Unitario Venta:</label>
                 <input type="number" step="0.01" id="precioU_Venta" name="precioU_Venta" value="<?php echo $precioU_Venta; ?>" readonly>
-
+                
                 <script>
                     function calcularMultiplicacion() {
                         const p_costo = document.getElementById("precio_costo").value;
@@ -207,9 +164,10 @@
                 </script>
 
             </fieldset>
-            
 
             <input type="submit" value="Enviar" class="boton">
         </form> 
         
     </main>
+
+

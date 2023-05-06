@@ -64,7 +64,7 @@
             /** SUBIDA DE ARCHIVOS */
 
             // Crear carpeta
-            $carpetaImagenes = '../../imagenes/';
+            $carpetaImagenes = '../../img/productos/';
 
             if(!is_dir($carpetaImagenes)) {
                 mkdir($carpetaImagenes);
@@ -91,7 +91,7 @@
                 //echo "Insertado correctamente";
 
                 //Redireccionar al usuario, se usa poco y solo se puede usar si es que no hay html antes de esta funcion
-                header('Location: /admin?resultado=1');
+                header('Location: /Productos?resultado=1');
             }
         }
     }
@@ -101,7 +101,7 @@
     <main>
         <h1>Agregar Producto</h1>
 
-        <a href="/admin" class="boton">Volver</a>
+        <a href="/Productos" class="boton">Volver</a>
 
         <?php foreach($errores as $error): ?>
         <div class="alerta error">
@@ -109,7 +109,7 @@
         </div>
         <?php endforeach; ?>
 
-        <form class="formulario" method="POST" action="/admin/propiedades/crear.php" enctype="multipart/form-data">
+        <form class="formulario" method="POST" action="/Productos/propiedades/crear.php" enctype="multipart/form-data">
             <fieldset>
                 <legend>Producto</legend>
 
@@ -169,4 +169,5 @@
         </form> 
         
     </main>
+
 

@@ -34,14 +34,14 @@
             $resultado = mysqli_query($db, $query);
             $producto = mysqli_fetch_assoc($resultado);
             
-            unlink('../imagenes/' . $producto['imagen_producto']);
+            unlink('../img/productos/' . $producto['imagen_producto']);
     
-            // Eliminar la propiedad
+            // Eliminar los productos
             $query = "DELETE FROM productos WHERE idproductos = $idproductos";
             $resultado = mysqli_query($db, $query);
 
             if($resultado) {
-                header('location: /admin?resultado=3');
+                header('location: /Productos?resultado=3');
             }
         }
         
@@ -56,17 +56,17 @@
         }
     </style>
     <main class="contenedor seccion">
-        <h1>Administrador de bienes Raices</h1>
+        <h1>Seccion Productos</h1>
 
         <?php if( intval( $resultado ) === 1): ?>
-            <p class="alerta exito">Anuncio Creado Correctamente</p>
+            <p class="alerta exito">Producto Creado Correctamente</p>
         <?php elseif( intval( $resultado ) === 2): ?>
             <p class="alerta exito">Actualizado Correctamente</p>
         <?php elseif( intval( $resultado ) === 3 ): ?>
-            <p class="alerta exito">Anuncio Eliminado Correctamente</p>
+            <p class="alerta exito">Producto Eliminado Correctamente</p>
         <?php endif; ?>
 
-        <a href="/admin/propiedades/crear.php" class="boton">Agregar Nuevo Producto</a>
+        <a href="/Productos/propiedades/crear.php" class="boton">Agregar Nuevo Producto</a>
 
         <table class="propiedades">
             <thead>
@@ -89,7 +89,7 @@
                     <?php $categoria = mysqli_fetch_assoc($resultadoConsulta1) ?>
                     <td><?php echo $categoria['nombre']; ?></td>
                     <td><?php echo $producto['stock']; ?></td>
-                    <td> <img src="/imagenes/<?php echo $producto['imagen_producto']; ?>" class="imagen-tabla"> </td>
+                    <td> <img src="/img/productos/<?php echo $producto['imagen_producto']; ?>" class="imagen-tabla"> </td>
                     
                     <td>
                         
@@ -100,7 +100,7 @@
                             <input type="submit" class="boton rojo" value="Eliminar">
                         </form>
                     
-                        <a href="admin/propiedades/actualizar.php?idproductos=<?php echo $producto['idproductos']; ?>" class="boton naranja">Actualizar</a>
+                        <a href="Productos/propiedades/actualizar.php?idproductos=<?php echo $producto['idproductos']; ?>" class="boton naranja">Actualizar</a>
                     </td>
             <?php endwhile; ?>
                 </tr>
