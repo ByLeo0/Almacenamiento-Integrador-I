@@ -15,6 +15,11 @@
     // Obtener los datos de la propiedad
     $consulta = "SELECT * FROM productos WHERE idproductos = $idproductos";
     $resultado = mysqli_query($db, $consulta);
+    
+    if($resultado->num_rows===0){
+        header('Location: /Productos');
+    }
+   
     $productos = mysqli_fetch_assoc($resultado);
 
     // Consultar para obtener los vendedores
