@@ -1,0 +1,21 @@
+{
+    "name": "usuario/almacen_mvc",
+    "description": "Proyecto Almacen Farmaceutico",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Model\\":"./models",
+            "MVC\\":"./",
+            "Controllers\\":"./controllers"
+        }
+    },
+    "authors": [
+        {
+            "name": "Grupo 4",
+            "email": "u19301344@utp.edu.pe"
+        }
+    ],
+    "require": {
+        "intervention/image": "^2.7"
+    }
+}
